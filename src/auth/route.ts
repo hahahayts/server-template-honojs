@@ -1,11 +1,11 @@
 import { Hono } from "hono";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import prisma from "../prisma_client/index.js";
 import { loginSchema, registerSchema } from "../zod/schema.js";
+import { sign } from "hono/jwt";
 
 const auth = new Hono();
-const JWT_SECRET = "your_jwt_secret";
+const JWT_SECRET = "this_is_a_secret_key_for_jwt";
 
 // Register
 auth.post("/register", async (c) => {
@@ -68,8 +68,11 @@ auth.post("/login", async (c) => {
     user.password
   );
   if (!valid) return c.json({ error: "Invalid credentials" }, 401);
-
-  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+  const payload = {
+    userId: user.id,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60, // Expires in 1 hour
+  };
+  const token = await sign(payload, JWT_SECRET, "HS256");
 
   return c.json({ token });
 });
