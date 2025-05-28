@@ -12,6 +12,7 @@ route.get("/todos", async (c) => {
   return c.json(todos);
 });
 
+
 // GET /todos/:id - get a single todo by id
 route.get("/todos/:id", async (c) => {
   const id = parseInt(c.req.param("id"));
