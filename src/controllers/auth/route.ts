@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import bcrypt from "bcryptjs";
-import prisma from "../prisma_client/index.js";
-import { loginSchema, registerSchema } from "../zod/schema.js";
+import prisma from "../../prisma_client/index.js";
+import { loginSchema, registerSchema } from "../../zod/schema.js";
 import { sign } from "hono/jwt";
+import { setCookie } from "hono/cookie";
 
 const auth = new Hono();
 const JWT_SECRET = "this_is_a_secret_key_for_jwt";
@@ -70,11 +71,26 @@ auth.post("/login", async (c) => {
   if (!valid) return c.json({ error: "Invalid credentials" }, 401);
   const payload = {
     userId: user.id,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60, // Expires in 1 hour
+    email: user.email,
+    username: user.username,
   };
   const token = await sign(payload, JWT_SECRET, "HS256");
 
-  return c.json({ token });
+  setCookie(c, "token", token, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60,
+    path: "/",
+  });
+
+  // return c.json({ token });
+  return c.json({ message: "Login successful" });
+});
+
+// Logout
+auth.post("/logout", (c) => {
+  setCookie(c, "token", "", { maxAge: 0 });
+  return c.json({ message: "Logged out" });
 });
 
 export default auth;

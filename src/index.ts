@@ -1,9 +1,9 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
-import route from "./routes.js";
+import route from "./controllers/todos/routes.js";
 import { cors } from "hono/cors";
-import auth from "./auth/route.js";
+import auth from "./controllers/auth/route.js";
 import authMiddleware from "../middleware.js";
 
 const app = new Hono();

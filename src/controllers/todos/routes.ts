@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import prisma from "./prisma_client/index.js";
-import { getTaskById } from "./lib/index.js";
+import prisma from "../../prisma_client/index.js";
+import { getTaskById } from "../../lib/index.js";
 
 const route = new Hono();
 const task = await prisma.task;
@@ -11,7 +11,6 @@ route.get("/todos", async (c) => {
   console.log(c);
   return c.json(todos);
 });
-
 
 // GET /todos/:id - get a single todo by id
 route.get("/todos/:id", async (c) => {
