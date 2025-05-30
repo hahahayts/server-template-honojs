@@ -10,7 +10,10 @@ const app = new Hono();
 
 app.use(
   "*",
-  cors({ origin: ["http://localhost:3000", "http://localhost:5173"] })
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:5173"],
+    credentials: true,
+  })
 );
 
 // ✅ Apply JWT middleware before routing /api

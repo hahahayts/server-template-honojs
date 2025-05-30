@@ -4,6 +4,7 @@ import prisma from "../../prisma_client/index.js";
 import { loginSchema, registerSchema } from "../../zod/schema.js";
 import { sign } from "hono/jwt";
 import { setCookie } from "hono/cookie";
+import { id } from "zod/v4/locales";
 
 const auth = new Hono();
 const JWT_SECRET = "this_is_a_secret_key_for_jwt";
@@ -81,15 +82,28 @@ auth.post("/login", async (c) => {
     secure: true,
     maxAge: 60 * 60,
     path: "/",
+    sameSite: "Lax",
   });
 
   // return c.json({ token });
-  return c.json({ message: "Login successful" });
+  return c.json({
+    message: "Login successful",
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    },
+  });
 });
 
 // Logout
 auth.post("/logout", (c) => {
-  setCookie(c, "token", "", { maxAge: 0 });
+  setCookie(c, "token", "", {
+    httpOnly: true,
+    secure: true,
+    maxAge: 0,
+    path: "/",
+  });
   return c.json({ message: "Logged out" });
 });
 
