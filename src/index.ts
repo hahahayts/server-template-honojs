@@ -1,10 +1,8 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { basicAuth } from "hono/basic-auth";
-import route from "./controllers/products/routes.js";
 import { cors } from "hono/cors";
 import auth from "./controllers/auth/routes.js";
-import authMiddleware from "../middleware.js";
+import authMiddleware from "./middlewares/auth/index.js";
 import { routes } from "./controllers/routes.js";
 
 const app = new Hono();
@@ -27,17 +25,6 @@ app.route("/auth", auth);
 routes.forEach((route) => {
   app.route("/api", route);
 });
-
-app.get(
-  "/login",
-  basicAuth({
-    username: "user",
-    password: "user111",
-  }),
-  (c) => {
-    return c.text("Welcome to the protected route!");
-  }
-);
 
 serve(
   {

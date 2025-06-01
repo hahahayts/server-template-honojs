@@ -1,18 +1,21 @@
 import bcrypt from "bcryptjs";
 import prisma from "../../prisma_client/index.js";
-import { loginSchema, registerSchema } from "../../zod/schema.js";
-import { sign, verify } from "hono/jwt";
+import { loginSchema } from "../../zod/schema.js";
+import { verify } from "hono/jwt";
 import { getCookie, setCookie } from "hono/cookie";
 import type { Context } from "hono";
 import { setJWTData } from "../../data/cookie.js";
-import { access } from "fs";
+import {
+  validatedLoginData,
+  validatedRegisterData,
+} from "../../data/validatedData.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export async function registerController(c: Context) {
   const { username, email, password, confirmPassword } = await c.req.json();
 
-  const validatedData = registerSchema.safeParse({
+  const validatedData = validatedRegisterData({
     username,
     email,
     password,
@@ -62,7 +65,8 @@ export async function registerController(c: Context) {
 export async function loginController(c: Context) {
   const { email, password } = await c.req.json();
 
-  const validatedData = loginSchema.safeParse({ email, password });
+  const validatedData = validatedLoginData({ email, password });
+  // Validate the login data
   if (!validatedData.success) {
     return c.json({
       message: "Validation failed",
