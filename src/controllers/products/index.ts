@@ -1,64 +1,55 @@
 import type { Context } from "hono";
-import prisma from "../../prisma_client/index.js";
-import { getTaskById } from "../../lib/index.js";
+import {
+  createProductData,
+  deleteProductData,
+  getProductByIdData,
+  getProductsData,
+  replaceProductData,
+} from "../../data/product.js";
 
-const product = await prisma.product;
-
-export async function getProductsController(c: Context) {
-  const products = await product.findMany();
+export function getProductsController(c: Context) {
+  const products = getProductsData();
   console.log(c);
   return c.json(products);
 }
 
-export async function getProductByIdController(c: Context) {
-  const id = parseInt(c.req.param("id"));
+export function getProductByIdController(c: Context) {
+  const id = c.req.param("id");
   console.log(id);
-  const productData = await product.findUnique({
-    where: { id },
-  });
+  const productData = getProductByIdData(id);
   if (!productData) return c.json({ message: "Not found" }, 404);
-  return c.json(productData);
+  return c.json(productData, 200);
 }
 
 export async function createProductController(c: Context) {
   const data = await c.req.json();
   const newProduct = {
-    title: data.title,
-    completed: false,
+    name: data.name,
+    price: data.price,
   };
-  const createProduct = await product.create({
-    data: newProduct,
-  });
+  const createProduct = createProductData(newProduct);
   return c.json(createProduct, 201);
 }
 
 export async function replaceProductController(c: Context) {
-  const id = parseInt(c.req.param("id"));
+  const id = c.req.param("id");
   const data = await c.req.json();
 
-  const productData = await getTaskById(id);
+  const payload = {
+    name: data.name,
+    description: data.description,
+    price: data.price,
+  };
 
-  if (!productData) return c.json({ message: "Not found" }, 404);
-  const updatedProduct = await product.update({
-    where: { id },
-    data: {
-      title: data.title,
-      completed: data.completed,
-    },
-  });
+  const updatedProduct = replaceProductData(id, payload, c);
 
   return c.json(updatedProduct, 200);
 }
 
 export async function deleteProductController(c: Context) {
-  const id = parseInt(c.req.param("id"));
-  const todo = await getTaskById(id);
+  const id = c.req.param("id");
 
-  if (!todo) return c.json({ message: "Not found" }, 404);
+  const deletedProduct = deleteProductData(id, c);
 
-  await product.delete({
-    where: { id },
-  });
-
-  return c.json({ message: "Deleted successfully" });
+  return c.json(deletedProduct, 200);
 }
