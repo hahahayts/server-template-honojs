@@ -125,10 +125,12 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   email: 'email',
   password: 'password',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  role: 'role'
 };
 
-exports.Prisma.TaskScalarFieldEnum = {
+exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
@@ -152,11 +154,15 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.Role = exports.$Enums.Role = {
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Task: 'Task'
+  Product: 'Product'
 };
 
 /**

@@ -1,10 +1,11 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
-import route from "./controllers/todos/routes.js";
+import route from "./controllers/products/routes.js";
 import { cors } from "hono/cors";
-import auth from "./controllers/auth/route.js";
+import auth from "./controllers/auth/routes.js";
 import authMiddleware from "../middleware.js";
+import { routes } from "./controllers/routes.js";
 
 const app = new Hono();
 
@@ -23,7 +24,9 @@ app.use("/api/*", authMiddleware);
 app.route("/auth", auth);
 
 // Protected API routes
-app.route("/api", route);
+routes.forEach((route) => {
+  app.route("/api", route);
+});
 
 app.get(
   "/login",
