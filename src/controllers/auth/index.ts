@@ -4,6 +4,8 @@ import { loginSchema, registerSchema } from "../../zod/schema.js";
 import { sign, verify } from "hono/jwt";
 import { getCookie, setCookie } from "hono/cookie";
 import type { Context } from "hono";
+import { setJWTData } from "../../data/cookie.js";
+import { access } from "fs";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -33,9 +35,21 @@ export async function registerController(c: Context) {
       },
     });
 
+    const payload = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    };
+
+    // Sign the JWT token
+    const token = setJWTData(payload, c);
+
     return c.json({
       message: "Registered successfully",
-      user: { id: user.id, email: user.email },
+      user: {
+        id: user.id,
+        email: user.email,
+      },
     });
   }
 
@@ -66,22 +80,16 @@ export async function loginController(c: Context) {
     user.password
   );
   if (!valid) return c.json({ error: "Invalid credentials" }, 401);
+
   const payload = {
-    userId: user.id,
+    id: user.id,
     email: user.email,
     username: user.username,
   };
-  const token = await sign(payload, JWT_SECRET, "HS256");
 
-  setCookie(c, "token", token, {
-    httpOnly: true,
-    secure: true,
-    maxAge: 60 * 60,
-    path: "/",
-    sameSite: "Lax",
-  });
+  // Sign the JWT token
+  const token = setJWTData(payload, c);
 
-  // return c.json({ token });
   return c.json({
     message: "Login successful",
     user: {
