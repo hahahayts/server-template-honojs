@@ -5,7 +5,7 @@ import { type MiddlewareHandler } from "hono";
 import { getCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
 
-const JWT_SECRET = "this_is_a_secret_key_for_jwt";
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 // const authMiddleware: MiddlewareHandler = async (c, next) => {
 //   console.log(c.req.header("authorization"));

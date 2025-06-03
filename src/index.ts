@@ -4,14 +4,18 @@ import { cors } from "hono/cors";
 import auth from "./controllers/auth/routes.js";
 import authMiddleware from "./middlewares/auth/index.js";
 import { routes } from "./controllers/routes.js";
+import { logger } from "hono/logger";
 
 const app = new Hono();
+
+app.use(logger());
 
 app.use(
   "*",
   cors({
     origin: ["http://localhost:3000", "http://localhost:5173"],
     credentials: true,
+    exposeHeaders: ["Set-Cookie"],
   })
 );
 

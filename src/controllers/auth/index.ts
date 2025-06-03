@@ -42,6 +42,7 @@ export async function registerController(c: Context) {
       id: user.id,
       email: user.email,
       username: user.username,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60,
     };
 
     // Sign the JWT token
@@ -89,10 +90,14 @@ export async function loginController(c: Context) {
     id: user.id,
     email: user.email,
     username: user.username,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 
   // Sign the JWT token
-  const token = setJWTData(payload, c);
+  await setJWTData(payload, c);
+
+  // c.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  // c.header("Access-Control-Allow-Credentials");  
 
   return c.json({
     message: "Login successful",

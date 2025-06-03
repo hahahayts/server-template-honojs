@@ -1,5 +1,6 @@
-export interface PayloadType {
+export type MyJwtPayload = {
   id: string;
-  username: string;
   email: string;
-}
+  username: string;
+  exp: number;
+};

@@ -11,6 +11,6 @@ const auth = new Hono()
   .post("/register", registerController)
   .post("/login", loginController)
   .post("/logout", logoutController)
-  .get(".me", getCurrentUserController);
+  .get("/me", getCurrentUserController);
 
 export default auth;
